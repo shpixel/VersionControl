@@ -52,7 +52,7 @@ namespace UserMaintenance
                         string sw = name.ID.ToString();
                         sw += ",";
                         sw += name.FullName;
-                        file.WriteLineAsync(sw);
+                        file.WriteLine(sw);
                     }
                 }
             }

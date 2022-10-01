@@ -12,8 +12,11 @@ using UserMaintenance.Entities;
 
 namespace UserMaintenance
 {
+
     public partial class Form1 : Form
     {
+        public Guid selectedId = Guid.Empty;
+
         BindingList<User> users = new BindingList<User>();
 
         public Form1()
@@ -37,6 +40,7 @@ namespace UserMaintenance
             };
 
             users.Add(user);
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -45,7 +49,7 @@ namespace UserMaintenance
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                using (StreamWriter file = new StreamWriter(saveFileDialog.FileName))
+                using (StreamWriter file = new StreamWriter(saveFileDialog.FileName, false, Encoding.Default))
                 {
                     foreach (var name in users)
                     {
@@ -56,6 +60,31 @@ namespace UserMaintenance
                     }
                 }
             }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedValue == null) return;
+            
+            selectedId = (Guid)listBox1.SelectedValue;
+            ;
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (selectedId == Guid.Empty) return;
+
+            foreach (var user in users)
+            {
+                if (user.ID == selectedId)
+                {
+                    users.Remove(user);
+                    break;
+                }
+            }
+            if(listBox1.SelectedValue!=null) selectedId = (Guid)listBox1.SelectedValue;
+
         }
     }
 }

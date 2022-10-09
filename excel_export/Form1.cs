@@ -18,6 +18,14 @@ namespace excel_export
         public Form1()
         {
             InitializeComponent();
+            LoadTable();
         }
+
+        private void LoadTable()
+        {
+            flats = context.Flats.ToList();
+            ;
+        }
+
     }
 }

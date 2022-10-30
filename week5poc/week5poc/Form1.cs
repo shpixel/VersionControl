@@ -22,21 +22,17 @@ namespace week5poc
         public Form1()
         {
             InitializeComponent();
-            string rates= GetRates();
-            Feldolgozas(rates);
-
             dataGridView1.DataSource = Rates;
-
-            MakeChart();
+            RefreshData();
         }
 
         public string GetRates()
         {
             GetExchangeRatesRequestBody request = new GetExchangeRatesRequestBody();
 
-            request.currencyNames = "EUR";
-            request.startDate = "2020-01-01";
-            request.endDate = "2020-06-30";
+            request.currencyNames = (string)comboBox1.SelectedItem;
+            request.startDate = dateTimePicker1.Value.ToString();
+            request.endDate = dateTimePicker2.Value.ToString();
 
             GetExchangeRatesResponseBody response = mnbService.GetExchangeRates(request);
 
@@ -93,6 +89,30 @@ namespace week5poc
             legend.Enabled = false;
 
 
+        }
+
+        public void RefreshData()
+        {
+            Rates.Clear();
+
+            string rates = GetRates();
+            Feldolgozas(rates);
+            MakeChart();
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            RefreshData();
+        }
+
+        private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
+        {
+            RefreshData();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshData();
         }
     }
 }

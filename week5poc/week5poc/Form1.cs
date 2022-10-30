@@ -16,14 +16,39 @@ namespace week5poc
 {
     public partial class Form1 : Form
     {
-        MNBArfolyamServiceSoapClient mnbService=new MNBArfolyamServiceSoapClient();
+        MNBArfolyamServiceSoapClient mnbService = new MNBArfolyamServiceSoapClient();
         BindingList<RateData> Rates = new BindingList<RateData>();
+        BindingList<string> Currencies = new BindingList<string>();
 
         public Form1()
         {
             InitializeComponent();
             dataGridView1.DataSource = Rates;
-            RefreshData();
+            comboBox1.DataSource = Currencies;
+            FillCurrencies();
+            //RefreshData();
+        }
+
+        public void FillCurrencies()
+        {
+            var request = new GetCurrenciesRequestBody();
+
+            var response = mnbService.GetCurrencies(request);
+
+            XmlDocument xml = new XmlDocument();
+
+            xml.LoadXml(response.GetCurrenciesResult);
+
+            foreach (XmlElement item in xml.DocumentElement)
+            {
+                foreach (XmlElement i2 in item)
+                {
+                    string newCurrency;
+                    newCurrency = i2.InnerText;
+                    Currencies.Add(newCurrency);
+                }
+            }
+            ;
         }
 
         public string GetRates()
@@ -50,16 +75,18 @@ namespace week5poc
             foreach (XmlElement item in xml.DocumentElement)
             {
 
-                RateData newdata=new RateData();
+                RateData newdata = new RateData();
                 Rates.Add(newdata);
 
                 newdata.Date = DateTime.Parse(item.GetAttribute("date"));
 
                 XmlElement child = (XmlElement)item.ChildNodes[0];
-                newdata.Currency=child.GetAttribute("curr");
-                
-                
-                var unit =decimal.Parse(child.GetAttribute("unit"));
+                if (child == null) continue;
+
+                newdata.Currency = child.GetAttribute("curr");
+
+
+                var unit = decimal.Parse(child.GetAttribute("unit"));
                 var value = decimal.Parse(child.InnerText);
 
                 if (unit != 0)
@@ -84,7 +111,7 @@ namespace week5poc
             ca.AxisX.MajorGrid.Enabled = false;
             ca.AxisY.MajorGrid.Enabled = false;
             ca.AxisY.IsStartedFromZero = false;
-            
+
             var legend = chartRateData.Legends[0];
             legend.Enabled = false;
 

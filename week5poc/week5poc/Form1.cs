@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using week5poc.Entities;
 using week5poc.MnbServiceReference;
 
@@ -15,17 +16,18 @@ namespace week5poc
     public partial class Form1 : Form
     {
         MNBArfolyamServiceSoapClient mnbService=new MNBArfolyamServiceSoapClient();
-        BindingList<rateData> RateData = new BindingList<rateData>();
+        BindingList<RateData> RateData = new BindingList<RateData>();
 
         public Form1()
         {
             InitializeComponent();
-            GetRates();
+            string rates= GetRates();
+            Feldolgozas(rates);
 
             dataGridView1.DataSource = RateData;
         }
 
-        public void GetRates()
+        public string GetRates()
         {
             GetExchangeRatesRequestBody request = new GetExchangeRatesRequestBody();
 
@@ -36,6 +38,39 @@ namespace week5poc
             GetExchangeRatesResponseBody response = mnbService.GetExchangeRates(request);
 
             string result = response.GetExchangeRatesResult;
+
+            return result;
+        }
+
+        public void Feldolgozas(string ixml)
+        {
+            XmlDocument xml = new XmlDocument();
+
+            xml.LoadXml(ixml);
+
+            foreach (XmlElement item in xml.DocumentElement)
+            {
+
+                RateData newdata=new RateData();
+                RateData.Add(newdata);
+
+                newdata.Date = DateTime.Parse(item.GetAttribute("date"));
+
+                XmlElement child = (XmlElement)item.ChildNodes[0];
+                newdata.Currency=child.GetAttribute("curr");
+                
+                
+                var unit =decimal.Parse(child.GetAttribute("unit"));
+                var value = decimal.Parse(child.InnerText);
+
+                if (unit != 0)
+                {
+                    newdata.Value = value / unit;
+
+                }
+            }
+
+
         }
     }
 }

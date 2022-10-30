@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using System.Xml;
 using week5poc.Entities;
 using week5poc.MnbServiceReference;
@@ -16,7 +17,7 @@ namespace week5poc
     public partial class Form1 : Form
     {
         MNBArfolyamServiceSoapClient mnbService=new MNBArfolyamServiceSoapClient();
-        BindingList<RateData> RateData = new BindingList<RateData>();
+        BindingList<RateData> Rates = new BindingList<RateData>();
 
         public Form1()
         {
@@ -24,7 +25,9 @@ namespace week5poc
             string rates= GetRates();
             Feldolgozas(rates);
 
-            dataGridView1.DataSource = RateData;
+            dataGridView1.DataSource = Rates;
+
+            MakeChart();
         }
 
         public string GetRates()
@@ -52,7 +55,7 @@ namespace week5poc
             {
 
                 RateData newdata=new RateData();
-                RateData.Add(newdata);
+                Rates.Add(newdata);
 
                 newdata.Date = DateTime.Parse(item.GetAttribute("date"));
 
@@ -65,10 +68,29 @@ namespace week5poc
 
                 if (unit != 0)
                 {
-                    newdata.Value = value / unit;
+                    newdata.Value = value / unit / 100;
 
                 }
             }
+        }
+
+        public void MakeChart()
+        {
+            chartRateData.DataSource = Rates;
+
+            var series = chartRateData.Series[0];
+            series.ChartType = SeriesChartType.Line;
+            series.XValueMember = "Date";
+            series.YValueMembers = "Value";
+            series.BorderWidth = 2;
+
+            var ca = chartRateData.ChartAreas[0];
+            ca.AxisX.MajorGrid.Enabled = false;
+            ca.AxisY.MajorGrid.Enabled = false;
+            ca.AxisY.IsStartedFromZero = false;
+            
+            var legend = chartRateData.Legends[0];
+            legend.Enabled = false;
 
 
         }

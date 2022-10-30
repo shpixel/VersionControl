@@ -26,7 +26,7 @@ namespace week5poc
             dataGridView1.DataSource = Rates;
             comboBox1.DataSource = Currencies;
             FillCurrencies();
-            //RefreshData();
+            RefreshData();
         }
 
         public void FillCurrencies()
@@ -79,6 +79,18 @@ namespace week5poc
                 Rates.Add(newdata);
 
                 newdata.Date = DateTime.Parse(item.GetAttribute("date"));
+
+                /*foreach (XmlElement i2 in item) {
+                    newdata.Currency = i2.GetAttribute("curr");
+                    var unit = decimal.Parse(i2.GetAttribute("unit"));
+                    var value = decimal.Parse(i2.InnerText);
+
+                    if (unit != 0)
+                    {
+                        newdata.Value = value / unit / 100;
+
+                    }
+                }*/
 
                 XmlElement child = (XmlElement)item.ChildNodes[0];
                 if (child == null) continue;

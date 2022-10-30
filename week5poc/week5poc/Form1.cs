@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using week5poc.Entities;
 using week5poc.MnbServiceReference;
 
 namespace week5poc
@@ -14,11 +15,14 @@ namespace week5poc
     public partial class Form1 : Form
     {
         MNBArfolyamServiceSoapClient mnbService=new MNBArfolyamServiceSoapClient();
+        BindingList<rateData> RateData = new BindingList<rateData>();
 
         public Form1()
         {
             InitializeComponent();
             GetRates();
+
+            dataGridView1.DataSource = RateData;
         }
 
         public void GetRates()
